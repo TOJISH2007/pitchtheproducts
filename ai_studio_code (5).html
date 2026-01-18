@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indo-Collab | Locked Challenge</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --secondary: #7c3aed;
+            --bg: #020617;
+            --card: #0f172a;
+            --border: rgba(255,255,255,0.1);
+            --accent: #f43f5e;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: radial-gradient(circle at 0% 0%, #1e1b4b 0%, #020617 100%);
+            color: #f1f5f9;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container { width: 100%; max-width: 1000px; }
+        .glass {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            padding: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+        }
+
+        .hidden { display: none !important; }
+        h1 { font-size: 2.8rem; font-weight: 800; text-align: center; margin-bottom: 10px; letter-spacing: -1px; }
+        .subtitle { text-align: center; color: #94a3b8; margin-bottom: 40px; }
+
+        /* Login & Form */
+        .input-box { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-size: 0.8rem; color: #64748b; font-weight: 600; text-transform: uppercase; }
+        input {
+            width: 100%; padding: 15px; border-radius: 14px; border: 1px solid var(--border);
+            background: rgba(0,0,0,0.4); color: white; font-size: 1rem; transition: 0.3s;
+        }
+        input:focus { outline: none; border-color: var(--primary); background: rgba(0,0,0,0.6); }
+        
+        button {
+            width: 100%; padding: 16px; border-radius: 14px; border: none;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white; font-weight: 700; cursor: pointer; transition: 0.3s;
+        }
+        button:hover { transform: translateY(-2px); filter: brightness(1.1); }
+
+        /* Role Selection */
+        .role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .role-card {
+            padding: 50px 20px; border: 1px solid var(--border); border-radius: 24px;
+            text-align: center; cursor: pointer; transition: 0.3s; background: rgba(255,255,255,0.03);
+        }
+        .role-card:hover { border-color: var(--primary); background: rgba(79, 70, 229, 0.1); }
+
+        /* Fixed Collaboration Display */
+        .locked-collab {
+            display: flex; align-items: center; justify-content: center;
+            gap: 20px; margin: 40px 0; padding: 40px; 
+            background: linear-gradient(to bottom, rgba(255,255,255,0.05), transparent);
+            border-radius: 24px; border: 1px dashed var(--border);
+        }
+        .comp-tag { flex: 1; text-align: center; font-size: 2.2rem; font-weight: 800; color: #fff; }
+        .vs-divider { color: var(--accent); font-weight: 900; font-size: 1.2rem; padding: 10px; border: 1px solid var(--accent); border-radius: 50%; }
+
+        /* Table */
+        .table-wrap { overflow-x: auto; margin-top: 30px; border-radius: 15px; border: 1px solid var(--border); }
+        table { width: 100%; border-collapse: collapse; background: rgba(0,0,0,0.2); }
+        th, td { padding: 18px; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+        th { background: rgba(255,255,255,0.05); color: #94a3b8; text-transform: uppercase; }
+        .highlight-id { color: var(--secondary); font-weight: 700; }
+
+        @media (max-width: 650px) {
+            .role-grid { grid-template-columns: 1fr; }
+            .locked-collab { flex-direction: column; }
+            .comp-tag { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- SELECT ROLE -->
+    <div id="roleScreen" class="glass">
+        <h1>Indo-Collab</h1>
+        <p class="subtitle">Assigning unique corporate challenges in real-time.</p>
+        <div class="role-grid">
+            <div class="role-card" onclick="nav('login', 'group')">
+                <h2 style="color:var(--primary)">Group Portal</h2>
+                <p style="font-size: 0.9rem; margin-top:10px;">Get your unique pair & submit strategy</p>
+            </div>
+            <div class="role-card" onclick="nav('login', 'admin')">
+                <h2 style="color:var(--secondary)">Admin Panel</h2>
+                <p style="font-size: 0.9rem; margin-top:10px;">Monitor all group submissions</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="loginScreen" class="glass hidden">
+        <h2 id="loginTitle" style="text-align: center; margin-bottom: 30px;">Login</h2>
+        <div class="input-box">
+            <label id="idLabel">Group ID</label>
+            <input type="text" id="loginId" placeholder="Type here...">
+        </div>
+        <div class="input-box">
+            <label>Password</label>
+            <input type="password" id="loginPass" placeholder="••••">
+        </div>
+        <button onclick="doAuth()">Enter Portal</button>
+        <button onclick="location.reload()" style="background: none; border: 1px solid var(--border); margin-top: 15px; color: #64748b;">Go Back</button>
+    </div>
+
+    <!-- WORKSPACE -->
+    <div id="groupSpace" class="glass hidden">
+        <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <span id="displayId" style="background: var(--primary); padding: 5px 15px; border-radius: 8px; font-weight: bold; font-size: 0.8rem;">GROUP ID: --</span>
+            <button onclick="location.reload()" style="width: auto; padding: 6px 15px; font-size: 0.7rem; background: #334155;">Logout</button>
+        </div>
+
+        <p style="text-align: center; text-transform: uppercase; letter-spacing: 2px; font-size: 0.7rem; color: var(--accent); font-weight: bold;">Your Assigned Collaboration</p>
+        <div class="locked-collab">
+            <div class="comp-tag" id="ca">---</div>
+            <div class="vs-divider">VS</div>
+            <div class="comp-tag" id="cb">---</div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div class="input-box">
+                <label>Product Name</label>
+                <input type="text" id="p_name" placeholder="...">
+            </div>
+            <div class="input-box">
+                <label>Category</label>
+                <input type="text" id="p_cat" placeholder="...">
+            </div>
+        </div>
+        <div class="input-box">
+            <label>Target Audience</label>
+            <input type="text" id="p_aud" placeholder="...">
+        </div>
+        <div class="input-box">
+            <label>Unique Selling Proposition (USP)</label>
+            <input type="text" id="p_usp" placeholder="...">
+        </div>
+        
+        <button onclick="submitWork()">Submit Final Strategy</button>
+    </div>
+
+    <!-- ADMIN -->
+    <div id="adminPanel" class="glass hidden">
+        <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h1>Admin Console</h1>
+            <button onclick="location.reload()" style="width: auto; padding: 8px 20px;">Logout</button>
+        </div>
+        
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Group</th>
+                        <th>Companies Assigned</th>
+                        <th>Product</th>
+                        <th>Target</th>
+                        <th>USP Details</th>
+                    </tr>
+                </thead>
+                <tbody id="adminTable"></tbody>
+            </table>
+        </div>
+        <button onclick="clearSystem()" style="background: var(--accent); margin-top: 30px; width: auto; padding: 12px 25px;">Clear Database</button>
+    </div>
+
+</div>
+
+<script>
+    const companyList = [
+        "Tata", "Reliance", "Zomato", "Swiggy", "Flipkart", "Infosys", "Paytm", "BYJU’S", "Ola", 
+        "Nykaa", "Zepto", "CRED", "Airtel", "PharmEasy", "Mamaearth", "Lenskart", "Wipro", "HCL",
+        "Adani", "Mahindra", "ITC", "Jio", "Unacademy", "BigBasket", "Razorpay", "Oyo", "Boat"
+    ];
+
+    let sessionRole = '';
+    let sessionGroupId = '';
+    let sessionPair = [];
+
+    function nav(screen, role = '') {
+        sessionRole = role;
+        document.querySelectorAll('.glass').forEach(el => el.classList.add('hidden'));
+        if(screen === 'login') {
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('loginTitle').innerText = (role === 'admin') ? 'Administrator' : 'Group Registration';
+        }
+    }
+
+    function doAuth() {
+        const id = document.getElementById('loginId').value.trim();
+        const pass = document.getElementById('loginPass').value.trim();
+
+        if (sessionRole === 'admin') {
+            if (id === 'admin' && pass === 'admin123') {
+                showAdmin();
+            } else alert("Denied.");
+        } else {
+            if (!id || !pass) return alert("Enter credentials.");
+            sessionGroupId = id;
+            showGroupSpace();
+        }
+    }
+
+    function showGroupSpace() {
+        document.getElementById('loginScreen').classList.add('hidden');
+        document.getElementById('groupSpace').classList.remove('hidden');
+        document.getElementById('displayId').innerText = "GROUP: " + sessionGroupId;
+        
+        const db = JSON.parse(localStorage.getItem('indocollab_db') || "[]");
+        let groupEntry = db.find(item => item.id === sessionGroupId);
+
+        if (groupEntry) {
+            // Load existing assigned pair
+            sessionPair = groupEntry.pair.split(" × ");
+            document.getElementById('p_name').value = groupEntry.name;
+            document.getElementById('p_cat').value = groupEntry.cat;
+            document.getElementById('p_aud').value = groupEntry.aud;
+            document.getElementById('p_usp').value = groupEntry.usp;
+        } else {
+            // Assign a brand new unique pair permanently
+            sessionPair = generateUniquePair(db);
+            // Save immediately so it's locked to this group
+            const initialEntry = { 
+                id: sessionGroupId, 
+                pair: sessionPair.join(" × "),
+                name: '', cat: '', aud: '', usp: ''
+            };
+            db.push(initialEntry);
+            localStorage.setItem('indocollab_db', JSON.stringify(db));
+        }
+
+        document.getElementById('ca').innerText = sessionPair[0];
+        document.getElementById('cb').innerText = sessionPair[1];
+    }
+
+    function generateUniquePair(db) {
+        const usedKeys = db.map(item => item.pair.split(" × ").sort().join("|"));
+        let found = false;
+        let pair = [];
+
+        while(!found) {
+            let c1 = companyList[Math.floor(Math.random() * companyList.length)];
+            let c2 = companyList[Math.floor(Math.random() * companyList.length)];
+            if(c1 === c2) continue;
+
+            let key = [c1, c2].sort().join("|");
+            if(!usedKeys.includes(key)) {
+                pair = [c1, c2];
+                found = true;
+            }
+        }
+        return pair;
+    }
+
+    function submitWork() {
+        let db = JSON.parse(localStorage.getItem('indocollab_db') || "[]");
+        let index = db.findIndex(item => item.id === sessionGroupId);
+
+        db[index].name = document.getElementById('p_name').value;
+        db[index].cat = document.getElementById('p_cat').value;
+        db[index].aud = document.getElementById('p_aud').value;
+        db[index].usp = document.getElementById('p_usp').value;
+
+        localStorage.setItem('indocollab_db', JSON.stringify(db));
+        alert("Strategy Locked and Submitted!");
+    }
+
+    function showAdmin() {
+        document.getElementById('loginScreen').classList.add('hidden');
+        document.getElementById('adminPanel').classList.remove('hidden');
+        const db = JSON.parse(localStorage.getItem('indocollab_db') || "[]");
+        const table = document.getElementById('adminTable');
+        table.innerHTML = '';
+
+        db.forEach(row => {
+            table.innerHTML += `
+                <tr>
+                    <td class="highlight-id">${row.id}</td>
+                    <td style="font-weight:600">${row.pair}</td>
+                    <td>${row.name || '---'}</td>
+                    <td>${row.cat || '---'}</td>
+                    <td><small>${row.usp || '---'}</small></td>
+                </tr>
+            `;
+        });
+    }
+
+    function clearSystem() {
+        if(confirm("Wipe all data?")) {
+            localStorage.removeItem('indocollab_db');
+            showAdmin();
+        }
+    }
+</script>
+
+</body>
+</html>
